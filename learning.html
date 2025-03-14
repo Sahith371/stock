@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Learning Platform</title>
+    <style>
+        :root {
+            --background: #0a0e1a;
+            --card-bg: #111827;
+            --card-hover: #1a2234;
+            --primary: #10b981;
+            --primary-hover: #059669;
+            --gold: #f59e0b;
+            --gold-light: #fbbf24;
+            --text: #e5e7eb;
+            --text-secondary: #9ca3af;
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.5;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .nav {
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gold-light), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .search-bar {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 7rem auto 2rem;
+            padding: 0 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--gold-light), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .video-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+        }
+
+        .video-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .video-thumbnail {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            background: var(--card-hover);
+            overflow: hidden;
+        }
+
+        .video-thumbnail img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .video-card:hover .video-thumbnail img {
+            transform: scale(1.05);
+        }
+
+        .video-play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-card:hover .video-play-overlay {
+            opacity: 1;
+        }
+
+        .video-play-button {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .video-play-button::before {
+            content: '';
+            border-style: solid;
+            border-width: 12px 0 12px 20px;
+            border-color: transparent transparent transparent white;
+            margin-left: 4px;
+        }
+
+        .video-info {
+            padding: 1.5rem;
+        }
+
+        .video-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .video-duration {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .video-modal.active {
+            display: flex;
+        }
+
+        .video-container {
+            width: 80%;
+            max-width: 1000px;
+            position: relative;
+            aspect-ratio: 16/9;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            background: var(--primary-hover);
+            transform: scale(1.1);
+        }
+
+        .background-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                padding: 1rem;
+            }
+            
+            .search-bar {
+                display: none;
+            }
+            
+            .main-content {
+                margin-top: 5rem;
+                padding: 0 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-gradient"></div>
+    
+    <nav class="nav">
+        <div class="nav-content">
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                InvestLearn
+            </div>
+            <div class="nav-links">
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="Search courses...">
+                    <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <section class="hero">
+            <h1>Master the Art of Investing</h1>
+            <p>Learn from industry experts and develop your investment skills through our comprehensive video courses.</p>
+        </section>
+
+        <div class="video-grid" id="videoGrid"></div>
+    </main>
+
+    <div class="video-modal" id="videoModal">
+        <button class="close-modal" id="closeModal">×</button>
+        <div class="video-container" id="videoContainer"></div>
+    </div>
+
+    <script>
+        const videos = [
+            {
+                id: 1,
+                title: "Understanding Stock Market Fundamentals",
+                duration: "45:20",
+                videoUrl: "https://www.youtube.com/embed/p5ORIeMULIg",
+                videoId: "p5ORIeMULIg",
+                thumbnailUrl: "https://i.ytimg.com/vi/p5ORIeMULIg/maxresdefault.jpg"
+            },
+            {
+                id: 2,
+                title: "Technical Analysis Masterclass",
+                duration: "1:20:15",
+                videoUrl: "https://www.youtube.com/embed/ZCFkWDdmXG8",
+                videoId: "ZCFkWDdmXG8",
+                thumbnailUrl: "https://i.ytimg.com/vi/ZCFkWDdmXG8/maxresdefault.jpg"
+            },
+            {
+                id: 3,
+                title: "Investment Psychology",
+                duration: "55:45",
+                videoUrl: "https://www.youtube.com/embed/TJDcGv9OH4Q",
+                videoId: "TJDcGv9OH4Q",
+                thumbnailUrl: "https://i.ytimg.com/vi/TJDcGv9OH4Q/maxresdefault.jpg"
+            },
+            {
+                id: 4,
+                title: "Building a Diversified Portfolio",
+                duration: "1:05:30",
+                videoUrl: "https://www.youtube.com/embed/gtWfKqOp9Mo",
+                videoId: "gtWfKqOp9Mo",
+                thumbnailUrl: "https://i.ytimg.com/vi/gtWfKqOp9Mo/maxresdefault.jpg"
+            },
+            {
+                id: 5,
+                title: "Global Markets and Economic Indicators",
+                duration: "1:15:00",
+                videoUrl: "https://www.youtube.com/embed/F3QpgXBtDeo",
+                videoId: "F3QpgXBtDeo",
+                thumbnailUrl: "https://i.ytimg.com/vi/F3QpgXBtDeo/maxresdefault.jpg"
+            },
+            {
+                id: 6,
+                title: "Cryptocurrency Investment Strategies",
+                duration: "1:30:20",
+                videoUrl: "https://www.youtube.com/embed/rYQgy8QDEBI",
+                videoId: "rYQgy8QDEBI",
+                thumbnailUrl: "https://i.ytimg.com/vi/rYQgy8QDEBI/maxresdefault.jpg"
+            }
+        ];
+
+        function createVideoCard(video) {
+            return `
+                <div class="video-card" data-id="${video.id}">
+                    <div class="video-thumbnail">
+                        <img src="${video.thumbnailUrl}" alt="${video.title}" onerror="this.src='https://i.ytimg.com/vi/${video.videoId}/hqdefault.jpg'">
+                        <div class="video-play-overlay">
+                            <div class="video-play-button"></div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">${video.title}</h3>
+                        <div class="video-duration">${video.duration}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function initializeVideos() {
+            const videoGrid = document.getElementById('videoGrid');
+            const videoModal = document.getElementById('videoModal');
+            const videoContainer = document.getElementById('videoContainer');
+            const closeModal = document.getElementById('closeModal');
+            
+            videoGrid.innerHTML = videos.map(createVideoCard).join('');
+
+            document.querySelectorAll('.video-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const videoId = card.dataset.id;
+                    const video = videos.find(v => v.id === parseInt(videoId));
+                    if (video) {
+                        videoContainer.innerHTML = `<iframe src="${video.videoUrl}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                        videoModal.classList.add('active');
+                    }
+                });
+            });
+
+            closeModal.addEventListener('click', () => {
+                videoModal.classList.remove('active');
+                videoContainer.innerHTML = '';
+            });
+
+            videoModal.addEventListener('click', (e) => {
+                if (e.target === videoModal) {
+                    videoModal.classList.remove('active');
+                    videoContainer.innerHTML = '';
+                }
+            });
+        }
+
+        const searchInput = document.querySelector('.search-input');
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredVideos = videos.filter(video => 
+                video.title.toLowerCase().includes(searchTerm)
+            );
+            
+            const videoGrid = document.getElementById('videoGrid');
+            videoGrid.innerHTML = filteredVideos.map(createVideoCard).join('');
+            
+            // Reattach event listeners to the new cards
+            document.querySelectorAll('.video-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const videoId = card.dataset.id;
+                    const video = videos.find(v => v.id === parseInt(videoId));
+                    if (video) {
+                        const videoContainer = document.getElementById('videoContainer');
+                        videoContainer.innerHTML = `<iframe src="${video.videoUrl}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                        document.getElementById('videoModal').classList.add('active');
+                    }
+                });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', initializeVideos);
+    </script>
+</body>
+</html>
